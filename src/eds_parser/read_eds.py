@@ -3,7 +3,7 @@
 import ROOT
 import argparse
 import pandas as pd
-import tqdm
+#import tqdm
 
 # usage: python read_eds.py --input file.root --output file.csv
 
@@ -21,18 +21,18 @@ def read_events(path):
         cells[key] = []
     
     # Fill the dictionary
-    with tqdm.tqdm(total=tree.GetEntries()) as pbar:
-        for idx, entry in enumerate(tree):
-            branch = entry.GetBranch("CaloCellContainer_Cells")
-            cells["eta"].append(branch.eta)
-            cells["phi"].append(branch.phi)
-            cells["e"].append(branch.e)
-            cells["et"].append(branch.et)
-            cells["delta_phi"].append(branch.dphi)
-            cells["delta_e"].append(branch.deta)
-            cells["descr_idx"].append(branch.descriptor_link)
-            cells["entry_idx"].append(idx)
-            pbar.update(1)
+    #with tqdm.tqdm(total=tree.GetEntries()) as pbar:
+    for idx, entry in enumerate(tree):
+        branch = entry.GetBranch("CaloCellContainer_Cells")
+        cells["eta"].append(branch.eta)
+        cells["phi"].append(branch.phi)
+        cells["e"].append(branch.e)
+        cells["et"].append(branch.et)
+        cells["delta_phi"].append(branch.dphi)
+        cells["delta_e"].append(branch.deta)
+        cells["descr_idx"].append(branch.descriptor_link)
+        cells["entry_idx"].append(idx)
+    #        pbar.update(1)
 
     # Create a pandas DataFrame
     df = pd.DataFrame(cells)
