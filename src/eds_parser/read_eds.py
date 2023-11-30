@@ -36,7 +36,7 @@ def read_events(path):
         cells["entry_idx"].append(idx)
 
         pbar += 1
-        print("[" + "=" * int(pbar/new_bar) + "]\r", end="")
+        print("[" + "=" * int(pbar/new_bar) + "]", end="\r")
     #        pbar.update(1)
 
     # Create a pandas DataFrame
