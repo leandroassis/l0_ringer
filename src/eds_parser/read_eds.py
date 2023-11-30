@@ -22,6 +22,8 @@ def read_events(path):
     
     # Fill the dictionary
     #with tqdm.tqdm(total=tree.GetEntries()) as pbar:
+    pbar = 0
+    new_bar = len(tree.GetEntries())/50
     for idx, entry in enumerate(tree):
         branch = entry.GetBranch("CaloCellContainer_Cells")
         cells["eta"].append(branch.eta)
@@ -32,6 +34,9 @@ def read_events(path):
         cells["delta_e"].append(branch.deta)
         cells["descr_idx"].append(branch.descriptor_link)
         cells["entry_idx"].append(idx)
+
+        pbar += 1
+        print("[" + "=" * int(pbar/new_bar) + "]\r", end="")
     #        pbar.update(1)
 
     # Create a pandas DataFrame
