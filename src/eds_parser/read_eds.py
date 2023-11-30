@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import ROOT
 import argparse
 import pandas as pd
@@ -38,7 +40,7 @@ def read_events(path):
 
 
 if __name__ == "__main__":
-    
+
     # parse arguments
     parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos EDS.ROOT de simulação a nível de célula em conjuntos de dados binários.\n\
                                     Ferramenta desenvolvida por Leandro A. (leandro@lps.ufrj.br)', prog="python read_eds.py")
