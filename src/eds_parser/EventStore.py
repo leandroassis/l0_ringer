@@ -41,7 +41,7 @@ class EventStore( object ):
     try:
         from ROOT import xAOD
     except:
-        from . import dataframe_h
+        from ..core import dataframe_h
         gROOT.ProcessLine(dataframe_h)
 
     self.__file = TFile(self.filename)

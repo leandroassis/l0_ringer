@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ROOT
-from core import EventStore
+from EventStore import EventStore
 import argparse
 import pandas as pd
 
