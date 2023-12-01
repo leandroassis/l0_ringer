@@ -31,7 +31,7 @@ def read_events(event_info, start, end):
     for key in keys:
         cells[key] = []
 
-    total_entries = range(start, end+1)
+    total_entries = range(start, end)
     with tqdm.tqdm(total=len(total_entries)) as pbar:
         for entry_idx in total_entries:
 
@@ -80,13 +80,7 @@ def tune_job(job_path):
         
     df = read_events((job_data['root_filename'], job_data['tree_name']), job_data['lim_inf'], job_data['lim_sup'])
 
-    try:
-        old_df = pd.read_csv(job_data['outpath'], index_col=0)
-    except FileNotFoundError:
-        df.to_csv(job_data['outpath'])
-    else:
-        new_df = pd.concat([old_df, df], ignore_index=True)
-        new_df.to_csv(job_data['outpath'])
+    df.to_csv(job_data['outpath']+"events_%06d-%06d.csv" %(job_data['lim_inf'], job_data['lim_sup']), sep=';', index=False)
 
     job_data['job_status'] = 'DONE'
 
@@ -109,5 +103,5 @@ if __name__ == "__main__":
     for filename in os.scandir(arguments.jobs_path):
         if not filename.is_file():
             continue
-
+        
         tune_job(filename.path)
