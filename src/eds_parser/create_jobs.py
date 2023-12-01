@@ -20,10 +20,11 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
     total_entries = events.GetEntries()
 
     num_jobs = int(total_entries//events_per_job)
-    
 
     if not os.path.exists(job_path):
         os.makedirs(job_path)
+
+    jobs = []
         
     for job_idx in range(num_jobs):
         job = {
@@ -37,7 +38,24 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
                 "lim_sup": (job_idx+1)*events_per_job,
             }
         
-        job_name = "%s/job_%03d.pkl" %(job_path, job_idx)
+        jobs.append(job)
+
+    if total_entries%events_per_job > 0:
+        job = {
+                "job_id": "%03d" %num_jobs,
+                "outpath": outpath,
+                "job_path": job_path,
+                "root_filename": root_filename,
+                "tree_name": tree_name,
+                "job_status": "NOT STARTED",
+                "lim_inf": num_jobs*events_per_job,
+                "lim_sup": total_entries,
+            }
+        
+        jobs.append(job)
+
+    for job in jobs:
+        job_name = "%s/job_%03d.pkl" %(jobs['job_path'], job['job_id'])
 
         # se a job já existe, não sobreescreve
         if True in map(lambda filename: job_name == filename.path, os.scandir(job_path)):
