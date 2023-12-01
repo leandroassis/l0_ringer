@@ -7,7 +7,9 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
          "/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0004.102023.100k.nopileup.V0/ESD/zee.ESD.root")
 
 cd $HOME/l0_ringer/src/eds_parser
+mkdir $HOME/l0_ringer/data/
 
 for i in ${!paths[@]}; do
-    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -i ${paths[$i]} -o $HOME/l0_ringer/data_$i/readout.csv
+    mkdir $HOME/l0_ringer/data/data_$i
+    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/readout.csv >> $HOME/l0_ringer/data/data_$i/log$i.txt
 done
