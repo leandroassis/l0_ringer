@@ -89,7 +89,7 @@ def tune_job(job_path):
         pickle.dump(job_data, job_file)
 
     with open(job_data['job_path']+'jobs_view', 'a') as f:
-        f.write("Done job %s." %job_data['job_id'])
+        f.write("Done job %s.\n" %job_data['job_id'])
 
 if __name__ == "__main__":
 
