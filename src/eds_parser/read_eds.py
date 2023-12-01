@@ -3,7 +3,7 @@
 import ROOT
 
 import sys, os
-# caution: path[0] is reserved for script path (or '' in REPL)
+
 sys.path.insert(1, '../lorenzetti_utils/')
 sys.path.insert(1, '../')
 
@@ -11,10 +11,11 @@ from lorenzetti_utils.EventStore import EventStore
 import argparse
 import pandas as pd
 import tqdm
+import pickle
 
-# usage: python read_eds.py --input file.root --output file.csv
+# usage: python read_eds.py --jobs_path <path_to_jobs_dir>
 
-def read_events(path):
+def read_events(event_obj, start, end):
     """
     Read EDS.ROOT file and return a pandas DataFrame with the data.
     """
@@ -27,42 +28,34 @@ def read_events(path):
     for key in keys:
         cells[key] = []
 
-    event = EventStore(path, "CollectionTree")
-
-    total_entries = range(event.GetEntries())
+    total_entries = range(start, end+1)
     with tqdm.tqdm(total=len(total_entries)) as pbar:
-        for idx, entry in enumerate(total_entries):
-            event.GetEntry(entry)
-            cells_container = event.retrieve("CaloCellContainer_Cells")
-            descriptor_container = event.retrieve("CaloDetDescriptorContainer_Cells")
+        for entry_idx in total_entries:
 
-            class Cell:
-                def __init__( self, e, et, eta, phi, sampling ):
-                    self.e = float(e); self.et = float(et); 
-                    self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
+            event_obj.GetEntry(entry_idx)
+            cells_container = event_obj.retrieve("CaloCellContainer_Cells")
+            descriptor_container = event_obj.retrieve("CaloDetDescriptorContainer_Cells")
 
-            cell_idx = 0
             num_cells = len(cells_container)
-            while True: #for cell_idx in range(cells_container.size()):
+            for cell_idx in range(num_cells):
                 try:
                     cell = cells_container.at(cell_idx)
                 except:
                     break
                 else:
-                    cell_idx += 1
                     cells["eta"].append(float(cell.eta))
                     cells["phi"].append(float(cell.phi))
                     cells["e"].append(float(cell.e))
                     cells["et"].append(float(cell.et))
                     cells["delta_phi"].append(float(cell.dphi))
                     cells["delta_eta"].append(float(cell.deta))
-                    cells["entry_idx"].append(int(idx))
+                    cells["entry_idx"].append(int(entry_idx))
 
                     det = descriptor_container.at(int(cell.descriptor_link))
                     cells["sampling"].append(int(det.sampling))
                     cells["detector"].append(int(det.detector))
                     #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                    pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, idx))
+                    pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, entry_idx))
 
                     assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
@@ -72,6 +65,33 @@ def read_events(path):
 
     return df
 
+def tune_job(job_path):
+    '''
+    Read job from a path and return a pandas DataFrame with the data.
+    '''
+    with open(job_path, "rb") as job_file:
+        job_data = pickle.load(job_file)
+
+    if job_data['job_status'] == 'DONE':
+        return
+        
+    df = read_events(job_data['events'], job_data['lim_inf'], job_data['lim_sup'])
+
+    try:
+        old_df = pd.read_csv(job_data['outpath'], index_col=0)
+    except FileNotFoundError:
+        df.to_csv(job_data['outpath'])
+    else:
+        new_df = pd.concat([old_df, df], ignore_index=True)
+        new_df.to_csv(job_data['outpath'])
+
+    job_data['job_status'] = 'DONE'
+
+    # dump job
+    with open(job_path, "wb") as job_file:
+        pickle.dump(job_data, job_file)
+
+    print('Job %03d processed.' %job_data['job_id'])
 
 if __name__ == "__main__":
 
@@ -79,23 +99,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos EDS.ROOT de simulação a nível de célula em conjuntos de dados binários.\n\
                                     Ferramenta desenvolvida por Leandro A. (leandro@lps.ufrj.br)', prog="python read_eds.py")
 
-    parser.add_argument('-i', '--input', type=str, help='Input file.', required=True)
-    parser.add_argument('-o', '--output', type=str, help='Output file.', required=True)
+    parser.add_argument('-j', '--jobs_path', type=str, help='Path to jobs to be tunned.', required=True)
 
     arguments = parser.parse_args()
-    print()
 
-    # read EDS.ROOT file
-    df = read_events(arguments.input)
+    # read events from the jobs
+    for filename in os.scandir(arguments.jobs_path):
+        if not filename.is_file():
+            continue
 
-    base_path = "".join(arguments.output.split("/")[:-1])
-    if not os.path.exists(arguments.output):
-        os.makedirs(base_path)
-
-    # save to CSV
-    try:
-        df.to_csv(arguments.output, index=False)
-    except:
-        print("Error while saving to CSV file.")
-    else:
-        print("File saved to %s." %arguments.output)
+        tune_job(filename.path)
