@@ -59,6 +59,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
 
         # se a job já existe, não sobreescreve
         if True in map(lambda filename: job_name == filename.path, os.scandir(job_path)):
+            print("Job %s already exists. Skipping...\n" %job_name)
             continue
 
         with open(job_name, "wb") as f:

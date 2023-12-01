@@ -76,6 +76,7 @@ def tune_job(job_path):
         job_data = pickle.load(job_file)
 
     if job_data['job_status'] == 'DONE':
+        print("Job %s already done. Skipping...\n" %job_data['job_id'])
         return
         
     df = read_events((job_data['root_filename'], job_data['tree_name']), job_data['lim_inf'], job_data['lim_sup'])
