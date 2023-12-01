@@ -36,10 +36,10 @@ def read_events(path):
                     self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
 
             
-            for cell_idx in range(len(cells_container)):
+            for cell_idx in range(cells_container.GetEntries()):
 
                 cell = cells_container.at(cell_idx)
-                
+
                 cells["eta"].append(float(cell.eta))
                 cells["phi"].append(float(cell.phi))
                 cells["e"].append(float(cell.e))
