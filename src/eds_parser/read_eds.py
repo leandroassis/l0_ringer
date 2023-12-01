@@ -13,6 +13,8 @@ import pandas as pd
 import tqdm
 import pickle
 
+import multiprocessing as mp
+
 # usage: python read_eds.py --jobs_path <path_to_jobs_dir>
 
 def read_events(event_obj, start, end):
@@ -96,8 +98,7 @@ def tune_job(job_path):
 if __name__ == "__main__":
 
     # parse arguments
-    parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos EDS.ROOT de simulação a nível de célula em conjuntos de dados binários.\n\
-                                    Ferramenta desenvolvida por Leandro A. (leandro@lps.ufrj.br)', prog="python read_eds.py")
+    parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos EDS.ROOT de simulação a nível de célula em conjuntos de dados binários.', prog="python read_eds.py")
 
     parser.add_argument('-j', '--jobs_path', type=str, help='Path to jobs to be tunned.', required=True)
 
