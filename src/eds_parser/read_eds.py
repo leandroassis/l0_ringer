@@ -35,26 +35,29 @@ def read_events(path):
                     self.e = float(e); self.et = float(et); 
                     self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
 
-            
-            for cell_idx in range(cells_container.size()):
+            cell_idx = 0
+            while True: #for cell_idx in range(cells_container.size()):
+                try:
+                    cell = cells_container.at(cell_idx)
+                except:
+                    break
+                else:
+                    cell_idx += 1
+                    cells["eta"].append(float(cell.eta))
+                    cells["phi"].append(float(cell.phi))
+                    cells["e"].append(float(cell.e))
+                    cells["et"].append(float(cell.et))
+                    cells["delta_phi"].append(float(cell.dphi))
+                    cells["delta_e"].append(float(cell.deta))
+                    cells["entry_idx"].append(int(idx))
 
-                cell = cells_container.at(cell_idx)
+                    det = descriptor_container.at(cell.descriptor_link)
+                    cells["sampling"].append(int(det.sampling))
+                    cells["detector"].append(int(det.detector))
+                    #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
+                    pbar.set_description_str("Processing cell %d of entry %d." %(cell_idx, idx))
 
-                cells["eta"].append(float(cell.eta))
-                cells["phi"].append(float(cell.phi))
-                cells["e"].append(float(cell.e))
-                cells["et"].append(float(cell.et))
-                cells["delta_phi"].append(float(cell.dphi))
-                cells["delta_e"].append(float(cell.deta))
-                cells["entry_idx"].append(int(idx))
-
-                det = descriptor_container.at(cell.descriptor_link)
-                cells["sampling"].append(int(det.sampling))
-                cells["detector"].append(int(det.detector))
-                #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                pbar.set_description_str("Processing cell %d of entry %d." %(cell_idx, idx))
-
-                assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and det.et == cell.et and cell.deta == det.deta and cell.dphi == det.dphi)
+                    assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and det.et == cell.et and cell.deta == det.deta and cell.dphi == det.dphi)
 
             pbar.update(1)
     # Create a pandas DataFrame
@@ -73,7 +76,6 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', type=str, help='Output file.', required=True)
 
     arguments = parser.parse_args()
-    print(arguments)
     print()
 
     # read EDS.ROOT file
