@@ -19,7 +19,8 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
     events = EventStore(root_filename, tree_name)
     total_entries = events.GetEntries()
 
-    num_jobs = int(total_entries/events_per_job)
+    num_jobs = int(total_entries//events_per_job)
+    
 
     if not os.path.exists(job_path):
         os.makedirs(job_path)
@@ -35,8 +36,14 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
                 "lim_inf": job_idx*events_per_job,
                 "lim_sup": (job_idx+1)*events_per_job,
             }
-            
-        with open("%s/job_%03d.pkl" %(job_path, job_idx), "wb") as f:
+        
+        job_name = "%s/job_%03d.pkl" %(job_path, job_idx)
+
+        # se a job já existe, não sobreescreve
+        if True in map(lambda filename: job_name == filename.path, os.scandir(job_path)):
+            continue
+
+        with open(job_name, "wb") as f:
             pickle.dump(job, f)
 
 
