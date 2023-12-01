@@ -11,13 +11,20 @@ from lorenzetti_utils.EventStore import EventStore
 import argparse
 import pandas as pd
 import tqdm
+import os
+import multiprocessing
 
 # usage: python read_eds.py --input file.root --output file.csv
 
-def read_events(path):
+event = None
+
+def read_events(*args):
     """
     Read EDS.ROOT file and return a pandas DataFrame with the data.
     """
+    global event
+    path, start, end = args[0]
+    print("Reading events from %d to %d." %(start, end))
 
     # Create a dictionary with the data
     cells = {}
@@ -27,50 +34,58 @@ def read_events(path):
     for key in keys:
         cells[key] = []
 
-    event = EventStore(path, "CollectionTree")
+    total_entries = range(start, end+1)
+    for entry in total_entries:
+        event.GetEntry(entry)
+        cells_container = event.retrieve("CaloCellContainer_Cells")
+        descriptor_container = event.retrieve("CaloDetDescriptorContainer_Cells")
 
-    total_entries = range(event.GetEntries())
-    with tqdm.tqdm(total=len(total_entries)) as pbar:
-        for idx, entry in enumerate(total_entries):
-            event.GetEntry(entry)
-            cells_container = event.retrieve("CaloCellContainer_Cells")
-            descriptor_container = event.retrieve("CaloDetDescriptorContainer_Cells")
+        cell_idx = 0
+        while True: #for cell_idx in range(cells_container.size()):
+            try:
+                cell = cells_container.at(cell_idx)
+            except:
+                break
+            else:
+                cell_idx += 1
+                cells["eta"].append(float(cell.eta))
+                cells["phi"].append(float(cell.phi))
+                cells["e"].append(float(cell.e))
+                cells["et"].append(float(cell.et))
+                cells["delta_phi"].append(float(cell.dphi))
+                cells["delta_e"].append(float(cell.deta))
+                cells["entry_idx"].append(int(entry))
 
-            class Cell:
-                def __init__( self, e, et, eta, phi, sampling ):
-                    self.e = float(e); self.et = float(et); 
-                    self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
+                det = descriptor_container.at(int(cell.descriptor_link))
+                cells["sampling"].append(int(det.sampling))
+                cells["detector"].append(int(det.detector))
+                #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
 
-            cell_idx = 0
-            while True: #for cell_idx in range(cells_container.size()):
-                try:
-                    cell = cells_container.at(cell_idx)
-                except:
-                    break
-                else:
-                    cell_idx += 1
-                    cells["eta"].append(float(cell.eta))
-                    cells["phi"].append(float(cell.phi))
-                    cells["e"].append(float(cell.e))
-                    cells["et"].append(float(cell.et))
-                    cells["delta_phi"].append(float(cell.dphi))
-                    cells["delta_e"].append(float(cell.deta))
-                    cells["entry_idx"].append(int(idx))
+                assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
-                    det = descriptor_container.at(int(cell.descriptor_link))
-                    cells["sampling"].append(int(det.sampling))
-                    cells["detector"].append(int(det.detector))
-                    #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                    pbar.set_description("Processing cell %d of entry %d" %(cell_idx, idx))
+    print("Done reading events from %d to %d." %(start, end))
 
-                    assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
-
-            pbar.update(1)
     # Create a pandas DataFrame
     df = pd.DataFrame(cells)
 
     return df
 
+def launch_subprocesses(path):
+    global event
+
+    event = EventStore(path, "CollectionTree")
+    total_entries = event.GetEntries()
+
+    NUM_WORKERS = 1000
+
+    # split the work
+    ranges = [(path, i*total_entries//NUM_WORKERS, (i+1)*total_entries//NUM_WORKERS) for i in range(NUM_WORKERS)]
+
+    # launch the subprocesses
+    with multiprocessing.Pool(NUM_WORKERS) as pool:
+        df_results = pool.map(read_events, ranges)
+    
+    return pd.concat(df_results)
 
 if __name__ == "__main__":
 
@@ -82,12 +97,19 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', type=str, help='Output file.', required=True)
 
     arguments = parser.parse_args()
-    print()
 
     # read EDS.ROOT file
-    df = read_events(arguments.input)
+    df = launch_subprocesses(arguments.input)
 
+    if not os.path.exists(arguments.output):
+        os.makedirs("".join(arguments.output.split("/")[:-1]))
+    
     print(df.head())
 
     # save to CSV
-    #df.to_csv(arguments.output, index=False)
+    try:
+        df.to_csv(arguments.output, index=False)
+    except:
+        print("Error while saving to CSV file.")
+    else:
+        print("File saved to %s." %arguments.output)
