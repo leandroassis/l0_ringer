@@ -58,7 +58,7 @@ def read_events(event_info, start, end):
                 cells["sampling"].append(int(det.sampling))
                 cells["detector"].append(int(det.detector))
                 #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, entry_idx))
+                #pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, entry_idx))
 
                 assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
