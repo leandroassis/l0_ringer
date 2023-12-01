@@ -11,5 +11,5 @@ mkdir $HOME/l0_ringer/data/
 
 for i in ${!paths[@]}; do
     mkdir $HOME/l0_ringer/data/data_$i
-    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/readout.csv >> $HOME/l0_ringer/data/data_$i/log$i.txt &
+    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/readout.csv >> $HOME/l0_ringer/data/data_$i/log.txt &
 done
