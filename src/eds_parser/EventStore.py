@@ -28,7 +28,6 @@ class EventStore( object ):
     self.configure()
 
   def __del__(self):
-    self.__file.Close()
     del self.__tree
     del self.__file
 
