@@ -9,5 +9,5 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
 cd $HOME/l0_ringer/src/eds_parser
 
 for i in ${!paths[@]}; do
-    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py ${paths[$i]} $HOME/l0_ringer/data_$i/readout.csv
+    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -i ${paths[$i]} -o $HOME/l0_ringer/data_$i/readout.csv
 done
