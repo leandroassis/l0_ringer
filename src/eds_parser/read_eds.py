@@ -42,6 +42,7 @@ def read_events(path):
                     self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
 
             cell_idx = 0
+            num_cells = len(cells_container)
             while True: #for cell_idx in range(cells_container.size()):
                 try:
                     cell = cells_container.at(cell_idx)
@@ -61,7 +62,7 @@ def read_events(path):
                     cells["sampling"].append(int(det.sampling))
                     cells["detector"].append(int(det.detector))
                     #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                    pbar.set_description("Processing cell %d of entry %d" %(cell_idx, idx))
+                    pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, idx))
 
                     assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
@@ -87,13 +88,9 @@ if __name__ == "__main__":
     # read EDS.ROOT file
     df = read_events(arguments.input)
 
-    print(df.head())
-
     base_path = "".join(arguments.output.split("/")[:-1])
     if not os.path.exists(arguments.output):
         os.makedirs(base_path)
-
-    print(df.head())
 
     # save to CSV
     try:
