@@ -58,7 +58,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
         job_name = "%s/job_%s.pkl" %(job['job_path'], job['job_id'])
 
         # se a job já existe, não sobreescreve
-        file_exist_check = map(lambda filename: job_name in filename.path, os.scandir(job_path))
+        file_exist_check = map(lambda filename: job_name == filename.path; print(job_name == filename.path, job_name, filename.name);, os.scandir(job_path))
 
         skip = False
         for status in file_exist_check:
