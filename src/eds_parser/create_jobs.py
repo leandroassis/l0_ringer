@@ -28,10 +28,11 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
         job = {
                 "job_id": "%03d" %job_idx,
                 "outpath": outpath,
+                "root_filename": root_filename,
+                "tree_name": tree_name,
                 "job_status": "NOT STARTED",
                 "lim_inf": job_idx*events_per_job,
                 "lim_sup": (job_idx+1)*events_per_job,
-                "events": events
             }
             
         with open("%s/job_%03d.pkl" %(job_path, job_idx), "wb") as f:

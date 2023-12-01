@@ -17,7 +17,7 @@ import multiprocessing as mp
 
 # usage: python read_eds.py --jobs_path <path_to_jobs_dir>
 
-def read_events(event_obj, start, end):
+def read_events(event_info, start, end):
     """
     Read EDS.ROOT file and return a pandas DataFrame with the data.
     """
@@ -26,7 +26,8 @@ def read_events(event_obj, start, end):
     cells = {}
     keys = ["eta", "phi", "e", "et", "delta_phi", "delta_eta", "entry_idx", "sampling", "detector"]
 
-        
+    event_obj = EventStore(event_info[0], event_info[1])
+
     for key in keys:
         cells[key] = []
 
@@ -77,7 +78,7 @@ def tune_job(job_path):
     if job_data['job_status'] == 'DONE':
         return
         
-    df = read_events(job_data['events'], job_data['lim_inf'], job_data['lim_sup'])
+    df = read_events((job_data['root_filename'], job_data['tree_name']), job_data['lim_inf'], job_data['lim_sup'])
 
     try:
         old_df = pd.read_csv(job_data['outpath'], index_col=0)
