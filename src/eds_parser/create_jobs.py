@@ -28,6 +28,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
         job = {
                 "job_id": "%03d" %job_idx,
                 "outpath": outpath,
+                "job_path": job_path,
                 "root_filename": root_filename,
                 "tree_name": tree_name,
                 "job_status": "NOT STARTED",

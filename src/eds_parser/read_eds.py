@@ -32,37 +32,37 @@ def read_events(event_info, start, end):
         cells[key] = []
 
     total_entries = range(start, end)
-    with tqdm.tqdm(total=len(total_entries)) as pbar:
-        for entry_idx in total_entries:
+    #with tqdm.tqdm(total=len(total_entries)) as pbar:
+    for entry_idx in total_entries:
 
-            event_obj.GetEntry(entry_idx)
-            cells_container = event_obj.retrieve("CaloCellContainer_Cells")
-            descriptor_container = event_obj.retrieve("CaloDetDescriptorContainer_Cells")
+        event_obj.GetEntry(entry_idx)
+        cells_container = event_obj.retrieve("CaloCellContainer_Cells")
+        descriptor_container = event_obj.retrieve("CaloDetDescriptorContainer_Cells")
 
-            num_cells = len(cells_container)
-            for cell_idx in range(num_cells):
-                try:
-                    cell = cells_container.at(cell_idx)
-                except:
-                    break
-                else:
-                    cells["eta"].append(float(cell.eta))
-                    cells["phi"].append(float(cell.phi))
-                    cells["e"].append(float(cell.e))
-                    cells["et"].append(float(cell.et))
-                    cells["delta_phi"].append(float(cell.dphi))
-                    cells["delta_eta"].append(float(cell.deta))
-                    cells["entry_idx"].append(int(entry_idx))
+        num_cells = len(cells_container)
+        for cell_idx in range(num_cells):
+            try:
+                cell = cells_container.at(cell_idx)
+            except:
+                break
+            else:
+                cells["eta"].append(float(cell.eta))
+                cells["phi"].append(float(cell.phi))
+                cells["e"].append(float(cell.e))
+                cells["et"].append(float(cell.et))
+                cells["delta_phi"].append(float(cell.dphi))
+                cells["delta_eta"].append(float(cell.deta))
+                cells["entry_idx"].append(int(entry_idx))
 
-                    det = descriptor_container.at(int(cell.descriptor_link))
-                    cells["sampling"].append(int(det.sampling))
-                    cells["detector"].append(int(det.detector))
-                    #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
-                    pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, entry_idx))
+                det = descriptor_container.at(int(cell.descriptor_link))
+                cells["sampling"].append(int(det.sampling))
+                cells["detector"].append(int(det.detector))
+                #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
+                pbar.set_description("Processing cell %d/%d of entry %d" %(cell_idx, num_cells, entry_idx))
 
-                    assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
+                assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
-            pbar.update(1)
+            #pbar.update(1)
     # Create a pandas DataFrame
     df = pd.DataFrame(cells)
 
@@ -88,7 +88,8 @@ def tune_job(job_path):
     with open(job_path, "wb") as job_file:
         pickle.dump(job_data, job_file)
 
-    print('Job %03d processed.' %job_data['job_id'])
+    with open(job_data['job_path']+'jobs_view', 'a') as f:
+        f.write("Done job %s." %job_data['job_id'])
 
 if __name__ == "__main__":
 
