@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import ROOT
+
+import sys
+# caution: path[0] is reserved for script path (or '' in REPL)
+sys.path.insert(1, '../lorenzetti_utils/')
+
 from lorenzetti_utils.EventStore import EventStore
 import argparse
 import pandas as pd
