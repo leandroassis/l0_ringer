@@ -58,13 +58,18 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
         job_name = "%s/job_%s.pkl" %(job['job_path'], job['job_id'])
 
         # se a job já existe, não sobreescreve
-        print(map(lambda filename: job_name in filename.path, os.scandir(job_path)))
-        if True in map(lambda filename: job_name in filename.path, os.scandir(job_path)):
-            print("Job %s already exists. Skipping...\n" %job_name)
-            continue
+        file_exist_check = map(lambda filename: job_name in filename.path, os.scandir(job_path))
 
-        with open(job_name, "wb") as f:
-            pickle.dump(job, f)
+        skip = False
+        for status in file_exist_check:
+            if status:
+                print("Job %s already exists. Skipping...\n" %job_name)
+                skip = True
+                break
+        
+        if not skip:
+            with open(job_name, "wb") as f:
+                pickle.dump(job, f)
 
 
 if __name__ == "__main__":
