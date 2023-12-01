@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# usage: source convert_eds <numero_eventos_por_job>
+
 paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopileup.V0/ESD/Zee.ESD.root.0" \
        "/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0001.102023.50k.nopileup.V0/ESD/zee.ESD.root"   \
        "/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0002.102023.100k.nopileup.V0/ESD/zee.ESD.root"  \
@@ -14,6 +16,6 @@ for i in ${!paths[@]}; do
     mkdir $HOME/l0_ringer/data/data_$i
     mkdir $HOME/l0_ringer/data/data_$i/jobs
     mkdir $HOME/l0_ringer/data/data_$i/events
-    python3 $HOME/l0_ringer/src/eds_parser/create_jobs.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/events -j $HOME/l0_ringer/data/data_$i/jobs/
+    python3 $HOME/l0_ringer/src/eds_parser/create_jobs.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/events -j $HOME/l0_ringer/data/data_$i/jobs/ --events_per_job $1
     nohup python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -j $HOME/l0_ringer/data/data_$i/jobs/ &
 done
