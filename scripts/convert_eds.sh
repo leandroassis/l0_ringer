@@ -16,6 +16,6 @@ for i in ${!paths[@]}; do
     mkdir $HOME/l0_ringer/data/data_$i
     mkdir $HOME/l0_ringer/data/data_$i/jobs
     mkdir $HOME/l0_ringer/data/data_$i/events
-    python3 $HOME/l0_ringer/src/eds_parser/create_jobs.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/events -j $HOME/l0_ringer/data/data_$i/jobs/ --events_per_job $1
+    python3 $HOME/l0_ringer/src/eds_parser/create_jobs.py -i ${paths[$i]} -o $HOME/l0_ringer/data/data_$i/events/ -j $HOME/l0_ringer/data/data_$i/jobs/ --events_per_job $1
     nohup python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -j $HOME/l0_ringer/data/data_$i/jobs/ &
 done
