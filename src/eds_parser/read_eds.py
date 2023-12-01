@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ROOT
-from EventStore import EventStore
+from lorenzetti_utils.EventStore import EventStore
 import argparse
 import pandas as pd
 import tqdm
