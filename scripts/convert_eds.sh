@@ -9,7 +9,7 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
        "/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0004.102023.100k.nopileup.V0/ESD/zee.ESD.root"
        )
 
-date_time=$(date +"%d-%m-%Y_%H-%M-%S")
+date_time=$(date +"%d-%m-%Y")
 
 cd $HOME/l0_ringer/src/eds_parser
 mkdir $1/$date_time
