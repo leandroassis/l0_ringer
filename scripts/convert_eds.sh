@@ -8,5 +8,5 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
 
 
 for i in ${!paths[@]}; do
-    echo "$HOME/l0_ringer/src/eds_parser/convert_eds.py ${paths[$i]} $HOME/l0_ringer/data_$i/readout.csv"
+    python3 $HOME/l0_ringer/src/eds_parser/read_eds.py ${paths[$i]} $HOME/l0_ringer/data_$i/readout.csv
 done

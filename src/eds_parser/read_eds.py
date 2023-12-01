@@ -23,8 +23,7 @@ def read_events(*args):
     Read EDS.ROOT file and return a pandas DataFrame with the data.
     """
     global event
-    path, start, end = args[0]
-    print("Reading events from %d to %d." %(start, end))
+    path, start, end, events_done = args[0]
 
     # Create a dictionary with the data
     cells = {}
@@ -62,8 +61,8 @@ def read_events(*args):
                 #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
 
                 assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
-
-    print("Done reading events from %d to %d." %(start, end))
+        with events_done.get_lock():
+            events_done.value += 1
 
     # Create a pandas DataFrame
     df = pd.DataFrame(cells)
@@ -76,10 +75,12 @@ def launch_subprocesses(path):
     event = EventStore(path, "CollectionTree")
     total_entries = event.GetEntries()
 
-    NUM_WORKERS = 1000
+    NUM_WORKERS = 50
+    
+    events_done = multiprocessing.Value('i', 0)
 
     # split the work
-    ranges = [(path, i*total_entries//NUM_WORKERS, (i+1)*total_entries//NUM_WORKERS) for i in range(NUM_WORKERS)]
+    ranges = [(path, i*total_entries//NUM_WORKERS, (i+1)*total_entries//NUM_WORKERS, events_done) for i in range(NUM_WORKERS)]
 
     # launch the subprocesses
     with multiprocessing.Pool(NUM_WORKERS) as pool:
@@ -101,8 +102,9 @@ if __name__ == "__main__":
     # read EDS.ROOT file
     df = launch_subprocesses(arguments.input)
 
+    base_path = "".join(arguments.output.split("/")[:-1])
     if not os.path.exists(arguments.output):
-        os.makedirs("".join(arguments.output.split("/")[:-1]))
+        os.makedirs(base_path)
     
     print(df.head())
 
