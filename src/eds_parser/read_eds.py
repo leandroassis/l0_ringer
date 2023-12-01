@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     # read events from the jobs
     for filename in os.scandir(arguments.jobs_path):
-        if not filename.is_file():
+        if not filename.is_file() or filename.name == 'jobs_view':
             continue
         
         tune_job(filename.path)
