@@ -4,6 +4,7 @@ import ROOT
 from EventStore import EventStore
 import argparse
 import pandas as pd
+import tqdm
 
 # usage: python read_eds.py --input file.root --output file.csv
 
@@ -23,34 +24,36 @@ def read_events(path):
     event = EventStore(path, "physics")
 
     total_entries = range(event.GetEntries())
-    for idx, entry in enumerate(total_entries):
-        event.GetEntry(entry)
-        cells_container = event.retrieve("CaloCellContainer_Cells")
-        descriptor_container = event.retrieve("CaloDetDescriptorContainer_Cells")
+    with tqdm.tqdm(total=len(total_entries)) as pbar:
+        for idx, entry in enumerate(total_entries):
+            event.GetEntry(entry)
+            cells_container = event.retrieve("CaloCellContainer_Cells")
+            descriptor_container = event.retrieve("CaloDetDescriptorContainer_Cells")
 
-        class Cell:
-            def __init__( self, e, et, eta, phi, sampling ):
-                self.e = float(e); self.et = float(et); 
-                self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
+            class Cell:
+                def __init__( self, e, et, eta, phi, sampling ):
+                    self.e = float(e); self.et = float(et); 
+                    self.eta = float(eta); self.phi = float(phi); self.sampling = int(sampling)
 
-        
-        for cell in cells_container:
-            cells["eta"].append(float(cell.eta))
-            cells["phi"].append(float(cell.phi))
-            cells["e"].append(float(cell.e))
-            cells["et"].append(float(cell.et))
-            cells["delta_phi"].append(float(cell.dphi))
-            cells["delta_e"].append(float(cell.deta))
-            cells["entry_idx"].append(int(idx))
+            
+            for cell_idx, cell in enumerate(cells_container):
+                cells["eta"].append(float(cell.eta))
+                cells["phi"].append(float(cell.phi))
+                cells["e"].append(float(cell.e))
+                cells["et"].append(float(cell.et))
+                cells["delta_phi"].append(float(cell.dphi))
+                cells["delta_e"].append(float(cell.deta))
+                cells["entry_idx"].append(int(idx))
 
-            det = descriptor_container.at(cell.descriptor_link)
-            cells["sampling"].append(int(det.sampling))
-            cells["detector"].append(int(det.detector))
-            #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
+                det = descriptor_container.at(cell.descriptor_link)
+                cells["sampling"].append(int(det.sampling))
+                cells["detector"].append(int(det.detector))
+                #cells["cells"].append(Cell(det.e, det.et, det.eta, det.phi, det.sampling))
+                pbar.set_description_str("Processing cell %d of entry %d." %(cell_idx, idx))
 
-            assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and det.et == cell.et and cell.deta == det.deta and cell.dphi == det.dphi)
+                assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and det.et == cell.et and cell.deta == det.deta and cell.dphi == det.dphi)
 
-        print("\r[" + int(100*(idx/total_entries))*"=" + (100-idx)*" " + "]", end="")
+            pbar.update(1)
     # Create a pandas DataFrame
     df = pd.DataFrame(cells)
 
