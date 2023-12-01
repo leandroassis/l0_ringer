@@ -55,7 +55,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
         jobs.append(job)
 
     for job in jobs:
-        job_name = "%s/job_%s.pkl" %(job_path, job['job_id'])
+        job_name = "%sjob_%s.pkl" %(job_path, job['job_id'])
 
         # se a job já existe, não sobreescreve
         print(list(map(lambda filename: (job_name == filename.path), os.scandir(job_path))))
