@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
+sys.path.append("../src/")
+
 import ROOT
 from lorenzetti_utils.EventStore import EventStore
 import argparse
