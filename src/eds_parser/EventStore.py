@@ -36,14 +36,6 @@ class EventStore( object ):
   # Configure the event store
   #
   def configure(self):
-
-    # load all necessary libraries by hand
-    try:
-        from ROOT import xAOD
-    except:
-        from ..core import dataframe_h
-        gROOT.ProcessLine(dataframe_h)
-
     self.__file = TFile(self.filename)
     self.__tree = self.__file.Get(self.path)
 

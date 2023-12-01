@@ -21,7 +21,7 @@ def read_events(path):
     for key in keys:
         cells[key] = []
 
-    event = EventStore(path, "physics")
+    event = EventStore(path, "CollectionTree")
 
     total_entries = range(event.GetEntries())
     with tqdm.tqdm(total=len(total_entries)) as pbar:
