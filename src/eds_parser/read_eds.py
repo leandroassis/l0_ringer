@@ -2,7 +2,7 @@
 
 import ROOT
 
-import sys
+import sys, os
 # caution: path[0] is reserved for script path (or '' in REPL)
 sys.path.insert(1, '../lorenzetti_utils/')
 sys.path.insert(1, '../')
@@ -21,7 +21,7 @@ def read_events(path):
 
     # Create a dictionary with the data
     cells = {}
-    keys = ["eta", "phi", "e", "et", "delta_phi", "delta_e", "entry_idx", "sampling", "detector"]
+    keys = ["eta", "phi", "e", "et", "delta_phi", "delta_eta", "entry_idx", "sampling", "detector"]
 
         
     for key in keys:
@@ -54,7 +54,7 @@ def read_events(path):
                     cells["e"].append(float(cell.e))
                     cells["et"].append(float(cell.et))
                     cells["delta_phi"].append(float(cell.dphi))
-                    cells["delta_e"].append(float(cell.deta))
+                    cells["delta_eta"].append(float(cell.deta))
                     cells["entry_idx"].append(int(idx))
 
                     det = descriptor_container.at(int(cell.descriptor_link))
@@ -89,5 +89,16 @@ if __name__ == "__main__":
 
     print(df.head())
 
+    base_path = "".join(arguments.output.split("/")[:-1])
+    if not os.path.exists(arguments.output):
+        os.makedirs(base_path)
+
+    print(df.head())
+
     # save to CSV
-    #df.to_csv(arguments.output, index=False)
+    try:
+        df.to_csv(arguments.output, index=False)
+    except:
+        print("Error while saving to CSV file.")
+    else:
+        print("File saved to %s." %arguments.output)
