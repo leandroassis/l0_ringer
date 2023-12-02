@@ -36,7 +36,7 @@ def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
             if entry_idx < start or entry_idx >= end:
                 continue
 
-            with open(hex_path+"event_%05d.hex" %entry_idx, 'wb') as hex_file:
+            with open(hex_path+"event_%d.hex" %entry_idx, 'wb') as hex_file:
 
                 cells_from_entry = df[keys].loc[df['entry_idx'] == entry_idx]
 
