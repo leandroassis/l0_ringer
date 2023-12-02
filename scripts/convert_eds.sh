@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# usage: source convert_eds <output_base_path> <numero_eventos_por_job>
+# usage: source convert_eds <output_base_path> <numero_eventos_por_job> <-verbose>
 
 paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopileup.V0/ESD/Zee.ESD.root.0" \
        "/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0001.102023.50k.nopileup.V0/ESD/zee.ESD.root"   \
@@ -11,6 +11,12 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
 
 date_time=$(date +"%d-%m-%Y")
 
+if [ -z "$3" ]; then
+    log_file=/dev/null
+else
+    log_file=$1/$date_time/data/data_$i/log
+fi
+
 cd $HOME/l0_ringer/src/eds_parser
 mkdir $1/$date_time
 mkdir $1/$date_time/data
@@ -20,5 +26,5 @@ for i in ${!paths[@]}; do
     mkdir $1/$date_time/data/data_$i/jobs
     mkdir $1/$date_time/data/data_$i/events
     python3 $HOME/l0_ringer/src/eds_parser/create_jobs.py -i ${paths[$i]} -o $1/$date_time/data/data_$i/events/ -j $1/$date_time/data/data_$i/jobs/ --events_per_job $2
-    nohup python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -j $1/$date_time/data/data_$i/jobs/ > $1/$date_time/data/data_$i/log &
+    nohup python3 $HOME/l0_ringer/src/eds_parser/read_eds.py -j $1/$date_time/data/data_$i/jobs/ $3 > $log_file 2>&1 &
 done
