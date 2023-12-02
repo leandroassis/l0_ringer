@@ -65,7 +65,7 @@ def compress_file(file_path):
     # delete uncompressed file
     os.remove(file_path)
 
-if __name__ == "__main":
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Convert csv to hex and compress both the files.')
     parser.add_argument('-c', '--csv_path', type=str, help='Path to csv file.', required=True)
@@ -84,8 +84,6 @@ if __name__ == "__main":
 
     for filename in os.scandir(arguments.csv_path):
         if not filename.is_file() or filename.name[-4:] != ".csv":
-            print('continue')
             continue
         
-        print('going')
         csv_to_hex(filename.path, arguments.out_path)
