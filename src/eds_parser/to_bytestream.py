@@ -83,7 +83,7 @@ if __name__ == "__main__":
     if arguments.out_path[-1] != '/':
         arguments.out_path += '/'
 
-    if not os.exists(arguments.out_path):
+    if not os.path.exists(arguments.out_path):
         os.makedirs(arguments.out_path)
         
     csv_to_hex(arguments.csv_path, arguments.out_path, arguments.start, arguments.end, arguments.delete_source)
