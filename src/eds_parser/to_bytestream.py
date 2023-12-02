@@ -30,7 +30,7 @@ def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
 
     keys = ["eta", "phi", "e", "delta_phi", "delta_eta", "sampling", "detector"]
 
-    num_iterations = len(df['entry_idx'].unique()) if (end == 0 and start == 0) else end-start+1
+    num_iterations = len(df['entry_idx'].unique()) if (end == 0 and start == 0) else end-start
     with tqdm.tqdm(total=num_iterations) as pbar:
         for entry_idx in df['entry_idx'].unique():
 
