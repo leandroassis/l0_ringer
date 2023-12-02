@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pandas as pd
 import gzip
 import shutil
@@ -5,11 +7,14 @@ import os
 
 import argparse
 
-# read csv files and convert to .hex
-# compact hexdump and csv
-# provide hexdump
+# usage: python3 to_bytestream.py -c <path to .csv dir> -o <base path for hex file>
+# example: python3 to_bytestream.py -c /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/events -o /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/hex
 
 def csv_to_hex(csv_path, hex_path):
+    """
+    Read a csv file and convert it to a hex file.
+    """
+
     try:
         df = pd.read_csv(csv_path, sep=';')
     except FileNotFoundError:
@@ -63,4 +68,17 @@ if __name__ == "__main":
 
     arguments = parser.parse_args()
 
-    csv_to_hex(arguments.csv_path, arguments.out_path)
+    if arguments.csv_path[-1] != '/':
+        arguments.csv_path += '/'
+
+    if arguments.out_path[-1] != '/':
+        arguments.out_path += '/'
+
+    if not os.path.exists(arguments.out_path):
+        os.makedirs(arguments.out_path)
+
+    for filename in os.scandir(arguments.jobs_path):
+        if not filename.is_file() or filename.name[-4:] != ".csv":
+            continue
+        
+        csv_to_hex(filename.path, arguments.out_path)
