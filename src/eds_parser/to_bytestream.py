@@ -11,7 +11,7 @@ import tqdm
 # usage: python3 to_bytestream.py -c <path to .csv> -o <base path for hex file>
 # example: python3 to_bytestream.py -c /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/events/xxxx.csv -o /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/hex
 
-def csv_to_hex(csv_path, hex_path, start, end):
+def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
     """
     Read a csv file and convert it to a hex file.
     """
@@ -54,7 +54,8 @@ def csv_to_hex(csv_path, hex_path, start, end):
             pbar.update(1)
     
     # compress csv file
-    compress_file(csv_path)
+    if delete_source:
+        compress_file(csv_path, delete=False)
 
 
 def compress_file(file_path):
@@ -75,10 +76,12 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--out_path', type=str, help='Path to output file.', required=True)
     parser.add_argument('-s', '--start', type=int, help='Start index of the file.', required=False, default=0)
     parser.add_argument('-e', '--end', type=int, help='End index of the file.', required=False, default=0)
+    parser.add_argument('-d', '--delete_source', type=bool, help='Delete csv file after conversion.', required=False, default=False)
+    parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 
     arguments = parser.parse_args()
 
     if arguments.out_path[-1] != '/':
         arguments.out_path += '/'
         
-    csv_to_hex(arguments.csv_path, arguments.out_path, arguments.start, arguments.end)
+    csv_to_hex(arguments.csv_path, arguments.out_path, arguments.start, arguments.end, arguments.delete_source)
