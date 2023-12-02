@@ -63,10 +63,9 @@ def read_events(event_info, start, end):
                     assert (det.eta == cell.eta and det.phi == cell.phi and det.e == cell.e and cell.deta == det.deta and cell.dphi == det.dphi)
 
             pbar.update(1)
-    # Create a pandas DataFrame
-    df = pd.DataFrame(cells)
 
-    return df
+    # Create a pandas DataFrame
+    return pd.DataFrame(cells)
 
 def tune_job(job_path):
     '''
