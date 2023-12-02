@@ -15,11 +15,11 @@ import pickle
 
 import multiprocessing as mp
 
-# usage: python read_eds.py --jobs_path <path_to_jobs_dir>
+# usage: python read_esd.py --jobs_path <path_to_jobs_dir>
 
 def read_events(event_info, start, end):
     """
-    Read EDS.ROOT file and return a pandas DataFrame with the data.
+    Read ESD.ROOT file and return a pandas DataFrame with the data.
     """
 
     # Create a dictionary with the data
@@ -94,7 +94,7 @@ def tune_job(job_path):
 if __name__ == "__main__":
 
     # parse arguments
-    parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos EDS.ROOT de simulação a nível de célula em conjuntos de dados binários.', prog="python read_eds.py")
+    parser = argparse.ArgumentParser(description='Ferramenta para conversão de arquivos ESD.ROOT de simulação a nível de célula em conjuntos de dados binários.', prog="python read_esd.py")
 
     parser.add_argument('-j', '--jobs_path', type=str, help='Path to jobs to be tunned.', required=True)
 

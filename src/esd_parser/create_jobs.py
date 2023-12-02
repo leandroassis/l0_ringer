@@ -15,7 +15,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
     Create a job for each "events_per_jobs" entries in the root file.
     """
     
-    # read EDS.ROOT file
+    # read ESD.ROOT file
     events = EventStore(root_filename, tree_name)
     total_entries = events.GetEntries()
 
@@ -68,7 +68,7 @@ def create_jobs(root_filename, outpath, job_path, events_per_job=1000, tree_name
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Ferramenta para geração de jobs de conversão de eventos de célula em EDS para binario.', prog="python3 create_jobs.py")
+    parser = argparse.ArgumentParser(description='Ferramenta para geração de jobs de conversão de eventos de célula em ESD para binario.', prog="python3 create_jobs.py")
 
     parser.add_argument('-i', '--input', type=str, help='Input file.', required=True)
     parser.add_argument('-o', '--output', type=str, help='Output file.', required=True)

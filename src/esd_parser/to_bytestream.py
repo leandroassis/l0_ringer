@@ -9,7 +9,7 @@ import argparse
 import tqdm
 
 # usage: python3 to_bytestream.py -c <path to .csv> -o <base path for hex file>
-# example: python3 to_bytestream.py -c /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/events/xxxx.csv -o /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/hex
+# example: python3 to_bytestream.py -c /eos/user/l/lassisdo/esd_parser/02-12-2023/data/data_0/events/xxxx.csv -o /eos/user/l/lassisdo/esd_parser/02-12-2023/data/data_0/hex
 
 def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
     """
