@@ -84,6 +84,8 @@ if __name__ == "__main":
 
     for filename in os.scandir(arguments.csv_path):
         if not filename.is_file() or filename.name[-4:] != ".csv":
+            print('continue')
             continue
         
+        print('going')
         csv_to_hex(filename.path, arguments.out_path)
