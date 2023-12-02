@@ -77,7 +77,6 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--start', type=int, help='Start index of the file.', required=False, default=0)
     parser.add_argument('-e', '--end', type=int, help='End index of the file.', required=False, default=0)
     parser.add_argument('-d', '--delete_source', type=bool, help='Delete csv file after conversion.', required=False, default=False)
-    parser.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
 
     arguments = parser.parse_args()
 
