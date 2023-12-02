@@ -6,6 +6,7 @@ import shutil
 import os
 
 import argparse
+import tqdm
 
 # usage: python3 to_bytestream.py -c <path to .csv dir> -o <base path for hex file>
 # example: python3 to_bytestream.py -c /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/events -o /eos/user/l/lassisdo/eds_parser/02-12-2023/data/data_0/hex
@@ -29,21 +30,25 @@ def csv_to_hex(csv_path, hex_path):
 
     keys = ["eta", "phi", "e", "delta_phi", "delta_eta", "sampling", "detector"]
 
-    for entry_idx in df['entry_idx'].unique():
+    with tqdm.tqdm(total=len(df['entry_idx'].unique())) as pbar:
+        for entry_idx in df['entry_idx'].unique():
 
-        with open(hex_path+"event_%05d.hex" %entry_idx, 'wb') as hex_file:
+            with open(hex_path+"event_%05d.hex" %entry_idx, 'wb') as hex_file:
 
-            cell_from_entry = df[keys].loc[df['entry_idx'] == entry_idx]
+                cells_from_entry = df[keys].loc[df['entry_idx'] == entry_idx]
 
-            for cell_idx in len(cell_from_entry):
-                for key in keys:
-                    if key in keys[:-2]: # se a key estiver entre eta e sampling (não incluindo sampling)
-                        hex_file.write(cell_from_entry[key].iloc[cell_idx].astype('float32').tobytes())
-                    else:
-                        hex_file.write(cell_from_entry[key].iloc[cell_idx].astype('uint32').tobytes())
-        
-        # compress hex file
-        compress_file(hex_path+"event_%05d.hex" %entry_idx)
+                for cell_idx in range(len(cells_from_entry)):
+                    pbar.set_description("Writing cell %05d/%05d from event %05d." %(cell_idx, len(cells_from_entry), entry_idx))
+                    for key in keys:
+                        if key in keys[:-2]: # se a key estiver entre eta e sampling (não incluindo sampling)
+                            hex_file.write(cells_from_entry[key].iloc[cell_idx].astype('float32').tobytes())
+                        else:
+                            hex_file.write(cells_from_entry[key].iloc[cell_idx].astype('uint32').tobytes())
+            
+            # compress hex file
+            compress_file(hex_path+"event_%05d.hex" %entry_idx)
+            pbar.set_description("Compressing event %05d." %entry_idx)
+            pbar.update(1)
     
     # compress csv file
     compress_file(csv_path)
@@ -77,7 +82,7 @@ if __name__ == "__main":
     if not os.path.exists(arguments.out_path):
         os.makedirs(arguments.out_path)
 
-    for filename in os.scandir(arguments.jobs_path):
+    for filename in os.scandir(arguments.csv_path):
         if not filename.is_file() or filename.name[-4:] != ".csv":
             continue
         
