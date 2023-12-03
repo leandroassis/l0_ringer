@@ -23,12 +23,12 @@ def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
         return
     
     # values which will be converted to hex and allocated in sequential order
-    #       eta     phi       e    delta_phi delta_eta  samp    detec
-    # 0x 00000000 00000000 00000000 00000000 00000000 00000000 00000000 -> 7*4 bytes = 28 bytes -> 224 bits
+    #       eta     phi       e       samp     detec
+    # 0x 00000000 00000000 00000000 00000000 00000000 -> 3*4 + 2*2 bytes = 16 bytes -> 128 bits
     #keys = ["eta", "phi", "e", "delta_phi", "delta_eta", "sampling", "detector", "entry_idx"]
     # bytes are little endian
 
-    keys = ["eta", "phi", "e", "delta_phi", "delta_eta", "sampling", "detector"]
+    keys = ["eta", "phi", "e", "sampling", "detector"]
 
     num_iterations = len(df['entry_idx'].unique()) if (end == 0 and start == 0) else end-start
     with tqdm.tqdm(total=num_iterations) as pbar:
@@ -47,7 +47,7 @@ def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
                         if key in keys[:-2]: # se a key estiver entre eta e sampling (não incluindo sampling)
                             hex_file.write(cells_from_entry[key].iloc[cell_idx].astype('float32').tobytes())
                         else:
-                            hex_file.write(cells_from_entry[key].iloc[cell_idx].astype('uint32').tobytes())
+                            hex_file.write(cells_from_entry[key].iloc[cell_idx].astype('uint16').tobytes())
             
             # compress hex file
             compress_file(hex_path+"event_%d.hex" %entry_idx)
