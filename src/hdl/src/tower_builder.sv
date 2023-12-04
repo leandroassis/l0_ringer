@@ -8,19 +8,23 @@
 
 module tower_builder (top_addr, bottom_addr, towers, event_done);
 
-    parameter memory_addr_length = 20;
+    # (
+    parameter MEMORY_ADDR_LENGTH = 20;
 
     // confirmar arquitetura lorenzetti
-    parameter num_layers = 8; 
-    parameter tower_deta = 0.1, tower_dphi = 0.1;
-    parameter min_eta = -3.0, max_eta = 3.0, min_phi = -3.0, max_phi = 3.0;
+    parameter NUM_LAYERS = 8; 
+    parameter TOWER_DETA = 0.1, TOWER_DPHI = 0.1;
+    parameter MIN_ETA = -3.0, MAX_ETA = 3.0, MIN_PHI = -3.0, MAX_PHI = 3.0;
+    )
 
-    parameter num_towers_eta = (max_eta - min_eta) / tower_deta;
-    parameter num_towers_phi = (max_phi - min_phi) / tower_dphi;
+    integer NUM_TOWERS_ETA = (MAX_ETA - MIN_ETA) / TOWER_DETA;
+    integer NUM_TOWERS_PHI = (MAX_PHI - MIN_PHI) / TOWER_DPHI;
 
-    input [(memory_addr-1):0] top_addr, bottom_addr;
-    output [(num_layers-1):0] towers [(num_towers_eta-1):0][(num_towers_phi-1):0];
+    typedef reg [NUM_TOWERS_ETA-1:0][(NUM_TOWERS_PHI-1):0] tower;
 
-    output event_done; // bit que indica que o evento foi lido da memória
+    input [MEMORY_ADDR_LENGTH-1:0] top_addr, bottom_addr;
+    output tower [NUM_LAYERS-1:0] towers ;
+
+    output event_done;
 
 endmodule;
