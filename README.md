@@ -67,8 +67,24 @@ Ex:
 
 #### Divisão
 A divisão pode ser descrita como:
+                                 inteira            decimal
+    (a+b/10e6)/(c+d/10e6) = 10e6*a/(10e6*c + d) + b/(10e6*c + d)
 
-    (a+b/10e6)/(c+d/10e6) = a/c (parte inteira) + 10e-6.(a.d - b.c)/(c.d) (parte decimal)
+Ex:
+    2,123456/3,123456 = 0,679842
+
+    Em bits (2 divisão inteiras, 1 soma/subtração em complemento de 2):
+
+    Parte inteira
+    10e6*2/(10e6*3 + 123456) = 011110100001001000000*00000000000000000010/(011110100001001000000*00000000000000000011 + 00011110001001000000) = 0
+
+    Parte decimal
+    123456/(3*10e6 + 123456) = (000000000000000000010*1001100100100000000000)/011110100001001000000 = 0 00000000000000000001 (0,680272)
+
+    Até esse ponto existe um erro de 0,000000. Vamos introduzir a última parte para garantir mais precisão
+
+    123456/(3*10e6 + 123456) = (000011110001001000000/00000000000000000011*1001100100100000000000)/011110100001001000000 = 0 00000000000000000001 (0,000000)
+
 
 
 
