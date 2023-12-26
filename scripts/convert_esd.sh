@@ -11,11 +11,6 @@ paths=("/eos/user/e/eegidiop/lorenzettiCom/datasets/zee/prod0000.092023.10k.nopi
 
 date_time=$(date +"%d-%m-%Y")
 
-if [ -z "$3" ]; then
-    log_file=/dev/null
-else
-    log_file=$1/$date_time/data/data_$i/log
-fi
 
 cd $HOME/l0_ringer/src/esd_parser
 mkdir $1/$date_time
@@ -25,6 +20,13 @@ for i in ${!paths[@]}; do
     mkdir $1/$date_time/data/data_$i
     mkdir $1/$date_time/data/data_$i/jobs
     mkdir $1/$date_time/data/data_$i/events
+
+    if [ -z "$3" ]; then
+        log_file=/dev/null
+    else
+        log_file=$1/$date_time/data/data_$i/log
+    fi
+
     python3 $HOME/l0_ringer/src/esd_parser/create_jobs.py -i ${paths[$i]} -o $1/$date_time/data/data_$i/events/ -j $1/$date_time/data/data_$i/jobs/ --events_per_job $2 > $log_file 2>&1 &
     nohup python3 $HOME/l0_ringer/src/esd_parser/read_esd.py -j $1/$date_time/data/data_$i/jobs/ > $log_file 2>&1 &
 done
