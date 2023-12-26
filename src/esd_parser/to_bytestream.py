@@ -17,7 +17,7 @@ def csv_to_hex(csv_path, hex_path, start, end, delete_source=False):
     """
 
     try:
-        df = pd.read_csv(csv_path, sep=';')
+        df = pd.read_feather(csv_path, sep=';')
     except FileNotFoundError:
         print("File %s not found." %csv_path)
         return

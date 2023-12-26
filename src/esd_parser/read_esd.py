@@ -80,7 +80,7 @@ def tune_job(job_path):
         
     df = read_events((job_data['root_filename'], job_data['tree_name']), job_data['lim_inf'], job_data['lim_sup'])
 
-    df.to_csv(job_data['outpath']+"events_%06d-%06d.csv" %(job_data['lim_inf'], job_data['lim_sup']), sep=';', index=False)
+    df.to_feather(job_data['outpath']+"events_%06d-%06d.feather" %(job_data['lim_inf'], job_data['lim_sup']), sep=';', index=False)
 
     job_data['job_status'] = 'DONE'
 
