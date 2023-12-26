@@ -26,5 +26,5 @@ for i in ${!paths[@]}; do
     mkdir $1/$date_time/data/data_$i/jobs
     mkdir $1/$date_time/data/data_$i/events
     python3 $HOME/l0_ringer/src/esd_parser/create_jobs.py -i ${paths[$i]} -o $1/$date_time/data/data_$i/events/ -j $1/$date_time/data/data_$i/jobs/ --events_per_job $2 > $log_file 2>&1 &
-    nohup python3 $HOME/l0_ringer/src/esd_parser/read_esd.py -j $1/$date_time/data/data_$i/jobs/ $3 > $log_file 2>&1 &
+    nohup python3 $HOME/l0_ringer/src/esd_parser/read_esd.py -j $1/$date_time/data/data_$i/jobs/ > $log_file 2>&1 &
 done
